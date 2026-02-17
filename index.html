@@ -1150,6 +1150,32 @@
         document.getElementById('btnConflicts').addEventListener('click', showConflicts);
         document.getElementById('btnWorkload').addEventListener('click', showWorkload);
 
+window.addEventListener("DOMContentLoaded", function () {
+    const status = document.getElementById("fileStatus");
+
+    if (status) {
+        status.innerHTML = "Carregando escalas.csv automaticamente...";
+    }
+
+    fetch("escalas.csv", { cache: "no-store" })
+        .then((r) => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.text();
+        })
+        .then((csvText) => {
+            processCSV(csvText);
+            if (status) {
+                status.innerHTML = "✅ escalas.csv carregado automaticamente!";
+            }
+        })
+        .catch((err) => {
+            console.log("Autoload falhou:", err);
+        });
+});
+
+
+window.onclick = function(event) {
+
         window.onclick = function(event) {
             const conflictsModal = document.getElementById('conflictsModal');
             const workloadModal = document.getElementById('workloadModal');
