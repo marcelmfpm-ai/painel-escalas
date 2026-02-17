@@ -1157,19 +1157,28 @@ window.addEventListener("DOMContentLoaded", function () {
         status.innerHTML = "Carregando escalas.csv automaticamente...";
     }
 
-    fetch("escalas.csv", { cache: "no-store" })
+    // cache buster para não pegar CSV antigo no GitHub Pages
+    fetch("escalas.csv?v=" + Date.now(), { cache: "no-store" })
         .then((r) => {
             if (!r.ok) throw new Error("HTTP " + r.status);
             return r.text();
         })
         .then((csvText) => {
             processCSV(csvText);
+
+            // garante que a tela "Nenhum arquivo carregado" some
+            const emptyState = document.getElementById("emptyState");
+            if (emptyState) emptyState.classList.add("hidden");
+
             if (status) {
                 status.innerHTML = "✅ escalas.csv carregado automaticamente!";
             }
         })
         .catch((err) => {
             console.log("Autoload falhou:", err);
+            if (status) {
+                status.innerHTML = "⚠️ Não consegui carregar escalas.csv automaticamente (ver console).";
+            }
         });
 });
 
@@ -1184,7 +1193,7 @@ window.onclick = function(event) {
             if (event.target == workloadModal) {
                 workloadModal.style.display = "none";
             }
-        }
+        };
     </script>
 
 </body>
